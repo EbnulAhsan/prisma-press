@@ -38,18 +38,6 @@ const loginUser = async (payload: IloginUser) => {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     // this is for access token generation
 
     // const accesToken = jwt.sign({ jwtPayload
@@ -91,13 +79,6 @@ const loginUser = async (payload: IloginUser) => {
         config.jwt_refresh_secret,
         config.jwt_refresh_expiration
     );
-
-
-
-
-
-
-
 
     return {
         accessToken, refreshToken
