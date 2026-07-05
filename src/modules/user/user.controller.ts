@@ -1,46 +1,34 @@
 
 import { prisma } from "../../lib/prisma";
-import { Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { userService } from "./user.service";
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/senResponse";
 
 
 
 
+const RegisterUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-const RegisterUser = async (req: Request, res: Response) => {
+    const payload = req.body;
 
-    try {
-        const payload = req.body;
+    const user = await userService.registerUserIntoDB(payload);
 
-        const user = await userService.registerUserIntoDB(payload);
+   
 
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "User registration successful.",
+        data: {
+            user
+        },
+    });
 
-        res.status(httpStatus.CREATED).json({
-            success: true,
-            statusCode: httpStatus.CREATED,
-            message: "User registration successful.",
-            data: {
-                user
-            },
-        });
-
-    } catch (error) { 
-
-        console.error("Error registering user:", error);
-
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            success: false,
-            statusCode: httpStatus.INTERNAL_SERVER_ERROR,
-            message: "An error occurred during user registration.",
-            error: error instanceof Error ? error.message : "Unknown error",
-        });
-
-    }
-    
-} 
+})
 
 
 export const userController = {
