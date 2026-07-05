@@ -1,13 +1,15 @@
 import { IloginUser } from "./auth.interface"
 import { prisma } from "../../lib/prisma"
 import bcrypt from "bcrypt"
+import config from "../../config";
+import jwt from "jsonwebtoken";
 
 
-const loginUser =async (payload: IloginUser) => { 
+const loginUser = async (payload: IloginUser) => {
 
 
     const { email, password } = payload;
-    
+
     // const user = await prisma.user.findUnique({
     //     where: {
     //         email
@@ -28,7 +30,41 @@ const loginUser =async (payload: IloginUser) => {
     }
 
 
-    return user;
+    // this is for access token generation
+
+    const accesToken = jwt.sign({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+    }, "accessSecret", {
+        expiresIn : "1d"
+
+    });
+
+
+    // this is for refresh token generation
+
+    const refreshToken = jwt.sign({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+    }, "refreshSecret", {
+        expiresIn: "7d"
+    });
+
+
+
+
+
+
+
+
+
+    return {
+        accesToken, refreshToken
+    };
 
 
 }
