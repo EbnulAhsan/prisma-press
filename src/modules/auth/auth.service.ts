@@ -69,24 +69,6 @@ const loginUser = async (payload: IloginUser) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // this is for refresh token generation
 
     // const refreshToken = jwt.sign({
