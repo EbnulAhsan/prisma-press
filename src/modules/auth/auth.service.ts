@@ -2,7 +2,8 @@ import { IloginUser } from "./auth.interface"
 import { prisma } from "../../lib/prisma"
 import bcrypt from "bcrypt"
 import config from "../../config";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
+import { jwtUtils } from "../../utils/jwt";
 
 
 const loginUser = async (payload: IloginUser) => {
@@ -29,31 +30,85 @@ const loginUser = async (payload: IloginUser) => {
         throw new Error("Invalid email or password.");
     }
 
-
-    // this is for access token generation
-
-    const accesToken = jwt.sign({
+    const jwtPayload = {
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
-    }, "accessSecret", {
-        expiresIn : "1d"
 
-    });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // this is for access token generation
+
+    // const accesToken = jwt.sign({ jwtPayload
+
+    // }, config.jwt_access_secret, {
+    //     expiresIn : config.jwt_access_expiration
+
+    // }as SignOptions
+    // );
+
+
+    const accessToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_access_secret,
+        config.jwt_access_expiration
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // this is for refresh token generation
 
-    const refreshToken = jwt.sign({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-    }, "refreshSecret", {
-        expiresIn: "7d"
-    });
+    // const refreshToken = jwt.sign({
+    //     jwtPayload
 
+    // }, config.jwt_refresh_secret, {
+
+    //     expiresIn: config.jwt_refresh_expiration
+
+
+
+
+    // } as SignOptions
+    // );
+
+
+
+    const refreshToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_refresh_secret,
+        config.jwt_refresh_expiration
+    );
 
 
 
@@ -63,7 +118,7 @@ const loginUser = async (payload: IloginUser) => {
 
 
     return {
-        accesToken, refreshToken
+        accessToken, refreshToken
     };
 
 
