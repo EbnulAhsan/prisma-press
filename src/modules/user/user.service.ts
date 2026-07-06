@@ -9,13 +9,8 @@ import { RegisterUserPayload } from "./user.interface";
 // function for async
 
 
-
-
-
-
-
-
-const registerUserIntoDB = async (payload: RegisterUserPayload) => { const { name, email, password, profilePhoto } = payload;
+const registerUserIntoDB = async (payload: RegisterUserPayload) => {
+    const { name, email, password, profilePhoto } = payload;
     const isUserExists = await prisma.user.findUnique({
         where: { email },
     });
@@ -39,7 +34,7 @@ const registerUserIntoDB = async (payload: RegisterUserPayload) => { const { nam
                     profilePhoto,
 
                 }
-                
+
             }
         },
     });
@@ -70,10 +65,50 @@ const registerUserIntoDB = async (payload: RegisterUserPayload) => { const { nam
         },
     });
 
-    return user;    
+    return user;
 }
 
 
+const getMyProfileFromDB = async (userId: string) => {
+
+    const user = await prisma.user.findFirstOrThrow({
+        where: { id: userId },
+        omit: {
+            password: true
+        },
+        include: {
+            profile: true
+        }
+    })
+
+    return user
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const userService = {
-    registerUserIntoDB,
+    registerUserIntoDB, getMyProfileFromDB
 }
