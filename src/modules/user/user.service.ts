@@ -99,26 +99,26 @@ const updateMyProfileFromDB = async (userId: string, payload: any) => {
         where: {
             id: userId
         },
-            data: {
-                name,
-                email,
-                profile: {
-                    update: {
-                        profilePhoto,
-                        bio
-                    }
+        data: {
+            name,
+            email,
+            profile: {
+                update: {
+                    profilePhoto,
+                    bio
                 }
+            }
         },
-            
+
         omit: {
-                password: true,
+            password: true,
         },
         include: {
-            profile: true 
+            profile: true
         }
 
-        })
-    }
+    })
+}
 
 
 
