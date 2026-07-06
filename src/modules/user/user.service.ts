@@ -5,6 +5,8 @@ import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { RegisterUserPayload } from "./user.interface";
+import { stringify } from "node:querystring";
+import { profile } from "node:console";
 
 // function for async
 
@@ -88,6 +90,39 @@ const getMyProfileFromDB = async (userId: string) => {
 
 
 
+const updateMyProfileFromDB = async (userId: string, payload: any) => {
+
+    const { name, email, profilePhoto, bio } = payload
+
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            id: userId
+        },
+            data: {
+                name,
+                email,
+                profile: {
+                    update: {
+                        profilePhoto,
+                        bio
+                    }
+                }
+        },
+            
+        omit: {
+                password: true,
+        },
+        include: {
+            profile: true 
+        }
+
+        })
+    }
+
+
+
+
 
 
 
@@ -110,5 +145,5 @@ const getMyProfileFromDB = async (userId: string) => {
 
 
 export const userService = {
-    registerUserIntoDB, getMyProfileFromDB
+    registerUserIntoDB, getMyProfileFromDB, updateMyProfileFromDB
 }
