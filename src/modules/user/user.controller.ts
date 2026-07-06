@@ -40,15 +40,15 @@ const getMyProfile = catchAsync(async (req: Request, res: Response, next: NextFu
     // console.log("Request user:", req.user);
 
 
-   
+
 
     const profile = await userService.getMyProfileFromDB(req.user?.id as string)
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
     // if (!accessToken) {
     //     return sendResponse(res, {
     //         success: false,
@@ -77,7 +77,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response, next: NextFu
         success: true,
         statusCode: httpStatus.OK,
         message: "user profile fetched successfully",
-        data:{profile}
+        data: { profile }
     })
 
 
@@ -87,44 +87,22 @@ const getMyProfile = catchAsync(async (req: Request, res: Response, next: NextFu
 
 
 const updateMyProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    
+
+
+    const userId = req.user?.id as string;
+
+    const payload = req.body;
+
+    const updatedProfile = await userService.updateMyProfileFromDB(userId, payload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User profile updated successfully",
+        data: { updatedProfile }
+    })
+
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
