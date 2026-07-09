@@ -85,6 +85,8 @@ const getMyProfile = catchAsync(async (req: Request, res: Response, next: NextFu
 
 });
 
+// update profile request and response
+
 
 const updateMyProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
