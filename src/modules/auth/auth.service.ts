@@ -88,7 +88,22 @@ const loginUser = async (payload: IloginUser) => {
 }
 
 
-const refreshToken = async () => {
+const refreshToken = async (refreshToken: string) => {
+
+    const verifiedRefreshToken = jwtUtils.verifyToken(refreshToken, config.jwt_refresh_secret)
+
+
+    if (!verifiedRefreshToken.success) {
+        throw Error (verifiedRefreshToken.error)
+    }
+
+    const { id } = verifiedRefreshToken
+    
+    const user = await prisma.user.findUniqueOrThrow({
+        where: {
+            id 
+        }
+    })
     
 }
 
