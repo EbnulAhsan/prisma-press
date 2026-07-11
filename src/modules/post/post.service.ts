@@ -16,7 +16,18 @@ const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
 }
 
-const getAllPosts = () => {
+const getAllPosts = async () => {
+
+    const posts = await prisma.post.findMany(
+        {
+            include: {
+                author: true,
+                comments: true
+            }
+        }
+    );
+
+    return posts
 
 }
 
