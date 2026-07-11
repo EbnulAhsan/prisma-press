@@ -36,7 +36,36 @@ const getAllPosts = async () => {
 
 }
 
-const getPostById = () => {
+
+
+const getPostById = async (postId: string) => {
+    const post = await prisma.post.findUniqueOrThrow({
+        where: {
+            id: postId
+        }
+    })
+
+    const updatedPost = await prisma.post.update({
+        where: {
+            id: postId
+        },
+        data: {
+            views: {
+                increment: 1
+            }
+        },
+
+        include: {
+            author: {
+                omit: {
+                    password: true
+                }
+            },
+            comments: true
+        }
+    })
+
+    return updatePost
 
 }
 

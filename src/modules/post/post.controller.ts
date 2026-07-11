@@ -27,7 +27,7 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
 //  get all post
 const getAllPosts = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    
+
 
     const result = await postService.getAllPosts()
 
@@ -46,6 +46,21 @@ const getAllPosts = catchAsync(async (req: Request, res: Response, next: NextFun
 // get the posy by user id 
 
 const getPostById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const postId = req.params.postId
+
+    if (!postId) {
+        throw new Error("Post id Required")
+    }
+
+    const result = await postService.getPostById(postId as string)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "post retrived successfully",
+        data: result
+    })
 
 })
 
