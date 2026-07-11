@@ -62,6 +62,8 @@ const getPostById = catchAsync(async (req: Request, res: Response, next: NextFun
         data: result
     })
 
+    
+
 })
 
 

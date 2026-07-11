@@ -65,7 +65,7 @@ const getPostById = async (postId: string) => {
         }
     })
 
-    return updatePost
+    return updatedPost
 
 }
 
