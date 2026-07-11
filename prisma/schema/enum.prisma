@@ -16,3 +16,11 @@ enum PostStatus{
     ARCHIVED
 
 }
+
+enum CommentStatus {
+    APPROVED
+    REJECT
+}
+
+
+
