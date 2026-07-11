@@ -1,0 +1,16 @@
+
+
+model Comment {
+    id String @default(uuid())
+    content String @db.Text
+
+    authorId String
+
+
+
+    postId String
+
+
+    
+
+}
