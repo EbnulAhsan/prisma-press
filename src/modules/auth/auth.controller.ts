@@ -68,13 +68,23 @@ const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFu
 
     const refreshToken = req.cookies.refreshToken;
 
-    const result = authService.refreshToken(refreshToken)
+    const { accessToken } = await authService.refreshToken(refreshToken)
+    
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24 // 1 day in ms
+    })
 
     sendResponse(res,{
         success: true,
         statusCode: httpStatus.OK,
         message: "token refreshed successfully",
-        data: result
+        data: {
+            accessToken
+        }
     })
 
 
