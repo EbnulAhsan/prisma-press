@@ -1,5 +1,7 @@
 
-const creatPost = () => {
+const creatPost = (payload: ICreatePostPayload) => {
+
+
 
 }
 
