@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { auth } from "../../middlewares/auth";
 import { Role } from "../../../generated/prisma/enums";
+import { postController } from "./post.controller";
 
 
 
