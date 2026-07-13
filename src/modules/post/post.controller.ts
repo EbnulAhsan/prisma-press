@@ -48,86 +48,22 @@ const getAllPosts = catchAsync(async (req: Request, res: Response, next: NextFun
 
 // get the posy by user id 
 
-const getPostById = async (postId: string) => {
+const getPostById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const postId = req.params.postId;
 
+    if (!postId) {
+        throw new Error("Post Id Required In Params")
+    }
 
+    const result = await postService.getPostById(postId as string);
 
-    // const postId = req.params.postId
-
-    // if (!postId) {
-    //     throw new Error("Post id Required")
-    // }
-
-    // const result = await postService.getPostById(postId as string)
-
-    // sendResponse(res, {
-    //     success: true,
-    //     statusCode: httpStatus.OK,
-    //     message: "post retrived successfully",
-    //     data: result
-    // })
-
-
-    // implementation of transaction and rollback----------
-
-    const transactionResult = await prisma.$transaction(
-        async (tx) => {
-            await tx.post.update({
-                where: {
-                    id: postId
-                },
-                data: {
-                    views: {
-                        increment: 1
-                    }
-                }
-            })
-
-            const post = await tx.post.findUniqueOrThrow({
-                where: {
-                    id: postId
-                },
-
-                include: {
-                    author: {
-                        omit: {
-                            password: true
-                        }
-                    },
-
-                    comments: {
-                        where: {
-                            status: CommentStatus.APPROVED
-                        },
-
-                        orderBy: {
-                            createdAt: "desc"
-                        }
-
-
-                    },
-
-                    _count: {
-                        select: {
-                            comments: true
-                        }
-                    }
-                }
-            })
-
-            return post
-
-
-
-        }
-    )
-
-    return transactionResult
-
-
-
-
-}
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Post retrieved successfuly",
+        data: result
+    })
+})
 
 
 // update the post
@@ -187,6 +123,9 @@ const deletePost = catchAsync(async (req: Request, res: Response, next: NextFunc
 // get the post stats
 
 const getPostsStats = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+
 
 })
 
