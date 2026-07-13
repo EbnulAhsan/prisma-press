@@ -1,6 +1,7 @@
 import { PrismaClientValidationError } from "@prisma/client/runtime/client"
 import { prisma } from "../../lib/prisma"
 import { ICreatePostPayload, IUpdatePostPayload } from "./post.interface"
+import { CommentStatus } from "../../../generated/prisma/enums"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
@@ -40,33 +41,99 @@ const getAllPosts = async () => {
 
 
 const getPostById = async (postId: string) => {
-    const post = await prisma.post.findUniqueOrThrow({
-        where: {
-            id: postId
-        }
-    })
 
-    const updatedPost = await prisma.post.update({
-        where: {
-            id: postId
-        },
-        data: {
-            views: {
-                increment: 1
-            }
-        },
+    // await prisma.post.update({
+    //     where : {
+    //         id : postId,
+    //     },
+    //     data : {
+    //         views : {
+    //             increment : 1
+    //         },
+    //     }
+    // })
 
-        include: {
-            author: {
-                omit: {
-                    password: true
+    // throw new Error("Fake Error")
+
+    // const post = await prisma.post.findUniqueOrThrow({
+    //     where : {
+    //         id : postId
+    //     },
+
+    //     include : {
+    //         author : {
+    //             omit : {
+    //                 password : true
+    //             }
+    //         },
+
+    //         comments : {
+    //             where : {
+    //                 status : CommentStatus.APPROVED
+    //             },
+
+    //             orderBy : {
+    //                 createdAt : "desc"
+    //             }
+    //         },
+
+    //         _count : {
+    //             select : {
+    //                 comments : true
+    //             }
+    //         }
+    //     }
+    // })
+
+    // return post
+
+    const transactionResult = await prisma.$transaction(
+        async (tx) => {
+            await tx.post.update({
+                where: {
+                    id: postId,
+                },
+                data: {
+                    views: {
+                        increment: 1
+                    },
                 }
-            },
-            comments: true
-        }
-    })
+            });
+            // throw new Error("fake error")
+            const post = await tx.post.findUniqueOrThrow({
+                where: {
+                    id: postId
+                },
 
-    return updatedPost
+                include: {
+                    author: {
+                        omit: {
+                            password: true
+                        }
+                    },
+
+                    comments: {
+                        where: {
+                            status: CommentStatus.APPROVED
+                        },
+
+                        orderBy: {
+                            createdAt: "desc"
+                        }
+                    },
+
+                    _count: {
+                        select: {
+                            comments: true
+                        }
+                    }
+                }
+            });
+            return post
+        }
+    );
+
+    return transactionResult
 
 }
 
