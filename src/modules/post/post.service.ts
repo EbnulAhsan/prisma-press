@@ -248,8 +248,23 @@ const getPostsStats = async () => {
             })
 
 
+            // total views shwon on postman
+
+            const allPosts = await tx.post.findMany()
+
+            let totalPostViews = 0
+
+            allPosts.forEach((post) => {
+
+                totalPostViews = totalPostViews + post.views
+
+
+                
+            })
+
+
             return {
-                totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments
+                totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments, totalPostViews
 
             }
 
