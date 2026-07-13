@@ -1,3 +1,4 @@
+import { PrismaClientValidationError } from "@prisma/client/runtime/client"
 import { prisma } from "../../lib/prisma"
 import { ICreatePostPayload, IUpdatePostPayload } from "./post.interface"
 
@@ -105,7 +106,34 @@ const updatePost = async (postId: string, payload: IUpdatePostPayload, authorId:
 
 }
 
-const deletePost = () => {
+const deletePost =async (postId: string, authorId: string, isAdmin: boolean) => {
+
+    // find the post 
+    const post = await prisma.post.
+        findFirstOrThrow({
+            where: {
+                id: postId
+
+            }
+        })
+    
+    // check is he admin or author 
+    if (!isAdmin && post.authorId !== authorId) {
+        throw new Error("you are not the owner of this post ")
+
+    }
+
+    const result = await prisma.post.delete({
+        where: {
+            id: postId
+        }
+    })
+
+    // return null // j post delete oitaa dhore return kora  is not a optimise work
+
+    // for see we return the result 
+
+    return result
 
 }
 
