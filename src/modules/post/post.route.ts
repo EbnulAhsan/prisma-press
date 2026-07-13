@@ -24,7 +24,7 @@ router.get("/", postController.getAllPosts)
 
 router.get(
     "/stats",
-    auth(Role.Admin),
+    auth(Role.Admin, Role.Author, Role.User),
     postController.getPostsStats
 )
 
