@@ -1,7 +1,8 @@
 import { PrismaClientValidationError } from "@prisma/client/runtime/client"
 import { prisma } from "../../lib/prisma"
 import { ICreatePostPayload, IUpdatePostPayload } from "./post.interface"
-import { CommentStatus } from "../../../generated/prisma/enums"
+import { CommentStatus, PostStatus } from "../../../generated/prisma/enums"
+import { text } from "node:stream/consumers"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
@@ -173,7 +174,7 @@ const updatePost = async (postId: string, payload: IUpdatePostPayload, authorId:
 
 }
 
-const deletePost =async (postId: string, authorId: string, isAdmin: boolean) => {
+const deletePost = async (postId: string, authorId: string, isAdmin: boolean) => {
 
     // find the post 
     const post = await prisma.post.
@@ -183,7 +184,7 @@ const deletePost =async (postId: string, authorId: string, isAdmin: boolean) => 
 
             }
         })
-    
+
     // check is he admin or author 
     if (!isAdmin && post.authorId !== authorId) {
         throw new Error("you are not the owner of this post ")
@@ -205,9 +206,67 @@ const deletePost =async (postId: string, authorId: string, isAdmin: boolean) => 
 }
 
 
-const getPostsStats = () => {
+const getPostsStats = async () => {
+
+    const transactionResult = await prisma.$transaction(
+        async (tx) => {
+
+            const totalPosts = await tx.post.count()
+
+            const totalPublishedPosts = await tx.post.count({
+                where: {
+                    status: PostStatus.PUBLISHED
+                }
+            })
+
+            const totalDraftPosts = await tx.post.count({
+                where: {
+                    status: PostStatus.DRAFT
+                }
+            })
+
+
+            const totalArchivedPosts = await tx.post.count({
+                where: {
+                    status: PostStatus.ARCHIVED
+
+                }
+            })
+
+            const totalComments = await tx.comment.count()
+
+            const totalApprovedComments = await tx.comment.count({
+                where: {
+                    status: CommentStatus.APPROVED
+                }
+            })
+
+            const totalRejectedComments = await tx.comment.count({
+                where: {
+                    status: CommentStatus.REJECT
+                }
+            })
+
+
+            return {
+                totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments
+
+            }
+
+
+
+        }
+    )
+
+    return transactionResult
+
+
 
 }
+
+
+
+
 
 const getMyPosts = async (authorId: string) => {
 
