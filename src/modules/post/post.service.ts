@@ -70,7 +70,7 @@ const getPostById = async (postId: string) => {
 }
 
 
-const updatePost = () => {
+const updatePost = (postId: string, payload : IUpdatePostPayload, userId: string) => {
 
 }
 
