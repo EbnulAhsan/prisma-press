@@ -264,25 +264,26 @@ const getPostsStats = async () => {
 
             //     //  now total post view with direct connecting with prisma 
 
-            //     const totalPostViewsAggregate = await tx.post.aggregate({
-            //         _sum: {
-            //             views: true
-            //         }
-            //     })
+            // const totalPostViewsAggregate = await tx.post.aggregate({
+            //     _sum: {
+            //         views: true
+            //     }
+            // })
 
             //     const totalPostViews = totalPostViewsAggregate._sum.views
 
 
-            //     return {
-            //         totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments,totalPostViews
+            // return {
+            //     totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments,totalPostViews
 
-            //     }
+            // }
 
 
             // usuing the best approach
 
 
-            await Promise.all([
+            const [totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments, totalPostViewsAggregate
+            ] = await Promise.all([
                 await tx.post.count(),
                 await tx.post.count({
                     where: {
@@ -320,6 +321,12 @@ const getPostsStats = async () => {
                     where: {
                         status: CommentStatus.REJECT
                     }
+                }),
+
+                await tx.post.aggregate({
+                    _sum: {
+                        views: true
+                    }
                 })
 
 
@@ -327,15 +334,13 @@ const getPostsStats = async () => {
 
 
 
-
-
-
-
-
-
-
-
             ])
+
+            return {
+                totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments, 
+                totalPostViews  : totalPostViewsAggregate._sum.views
+
+            }
 
 
 
