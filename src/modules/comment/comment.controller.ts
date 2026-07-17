@@ -1,12 +1,14 @@
-import { NextFunction,Request , Response       } from "express";
+import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/senResponse";
+import httpStatus from "http-status";
+
 
 
 //  create comment 
 const CreateComment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    const authorId = req.user?.id as string 
+    const authorId = req.user?.id as string
     const result = await commentService.createComment(authorId, req.body);
 
     sendResponse(res, {
@@ -16,13 +18,13 @@ const CreateComment = catchAsync(async (req: Request, res: Response, next: NextF
         data: result
     })
 
-    
+
 })
 
 
 // get comment
 
-const getCommentByPostID=catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const getCommentByPostID = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params
     const result = await commentService.getCommentByCommentId(postId as string)
 
