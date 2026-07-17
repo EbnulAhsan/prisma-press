@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/senResponse";
 import httpStatus from "http-status";
+import { commentService } from "./comment.service";
 
 
 
@@ -19,6 +20,18 @@ const CreateComment = catchAsync(async (req: Request, res: Response, next: NextF
     })
 
 
+})
+
+
+const getCommentByAuthorId = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { authorId } = req.params
+    const result = await commentService.getCommentByAuthorId(authorId as string)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Comments retrieved successfully",
+        data: result
+    })
 })
 
 
@@ -87,6 +100,6 @@ const moderateComment = catchAsync(async (req: Request, res: Response, next: Nex
 })
 
 export const commentController = {
-    CreateComment, getCommentByPostID, moderateComment, deleteComment, updateComment
+    CreateComment, getCommentByPostID, moderateComment, deleteComment, updateComment, getCommentByAuthorId
 
 }
