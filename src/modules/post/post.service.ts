@@ -92,17 +92,24 @@ const getAllPosts = async () => {
                             {
                                 title: {
                                     contains: "Ron",
-                                    mode:"insensitive"
+                                    mode: "insensitive"
                                 }
-                            
+
+                            },
+
+                            {
+                                content: {
+                                    contains: " Ron",
+                                    mode: "insensitive"
+                                }
                             }
                         ]
 
                     },
-        
-                
-                
-                
+
+
+
+
                     {
                         title: "Ronaldo"
                     },
