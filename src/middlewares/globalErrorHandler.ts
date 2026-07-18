@@ -40,18 +40,18 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
 
         if (err.errorCode === "p1000") {
             statusCode = httpStatus.UNAUTHORIZED,
-                errorMessage= " AAuthenticaation failed against database server"
+                errorMessage = " AAuthenticaation failed against database server"
         } else if (err.errorCode === "p1001") {
             statusCode = httpStatus.BAD_REQUEST,
-                errorMessage= "cant reach database server"
+                errorMessage = "cant reach database server"
         }
-        
+
     } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
 
         statusCode = httpStatus.INTERNAL_SERVER_ERROR,
-            
-            errorMessage= " error occured during query time"
-            
+
+            errorMessage = " error occured during query time"
+
     }
 
 
