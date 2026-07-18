@@ -33,6 +33,10 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
                 errorMessage = "  an operation failed bcz it depends on one or more records that were required but not found "
         }
 
+    } else if (err instanceof Prisma.PrismaClientInitializationError) {
+        statusCode = httpStatus.INTERNAL_SERVER_ERROR,
+            errorMessage= "Authentication error"
+        
     }
 
 
