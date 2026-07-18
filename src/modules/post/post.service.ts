@@ -23,6 +23,22 @@ const getAllPosts = async () => {
 
     const posts = await prisma.post.findMany(
         {
+            // where: {
+            //     title: " my 4th  post",
+                
+            // },
+
+
+            // another way is 
+
+            where: {
+                AND: [
+                    {
+                        title: " my 4th  post",
+                        
+                    }
+                ]
+            },
             include: {
                 author: {
                     omit: {
