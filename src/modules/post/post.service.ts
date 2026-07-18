@@ -1,8 +1,10 @@
 import { PrismaClientValidationError } from "@prisma/client/runtime/client"
 import { prisma } from "../../lib/prisma"
-import { ICreatePostPayload, IUpdatePostPayload } from "./post.interface"
+import { ICreatePostPayload, IpostQuery, IUpdatePostPayload } from "./post.interface"
 import { CommentStatus, PostStatus } from "../../../generated/prisma/enums"
 import { text } from "node:stream/consumers"
+import { postWhereInput } from "../../../generated/prisma/models"
+import { title } from "node:process"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
@@ -19,7 +21,20 @@ const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
 }
 
-const getAllPosts = async () => {
+
+// creating interface for query
+
+
+
+
+
+const getAllPosts = async (query: IpostQuery) => {
+
+    const limit = query.limit ? Number(query.limit) : 10
+    const page = query.page ? Number(query.page) : 1
+    const skip = (page - 1) * limit
+    const sortBy = query.sortBy ? query.sortBy : "createdAt"
+    const sortOrder = query.sortOrder   ? query.sortOrder : "desc"
 
     const posts = await prisma.post.findMany(
         {
@@ -80,96 +95,142 @@ const getAllPosts = async () => {
 
             // combined searching and filtering
 
+            // where: {
+            //     // filtering first
+
+            //     AND: [
+
+
+
+            //         {
+            //             OR: [
+            //                 {
+            //                     title: {
+            //                         contains: "Ron",
+            //                         mode: "insensitive"
+            //                     }
+
+            //                 },
+
+            //                 {
+            //                     content: {
+            //                         contains: " Ron",
+            //                         mode: "insensitive"
+            //                     }
+            //                 }
+            //             ]
+
+            //         },
+
+
+
+
+            //         {
+            //             title: "Ronaldo"
+            //         },
+
+            //         {
+            //             content: " Ronaldo"
+            //         }
+            //     ]
+
+            // },
+
+
+            // this is pagination
+
+
+
+            // take: 1,
+            // skip: 1,  //visiting page 2
+            // skip: 2,  //visiting page 3
+            // skip: 3,  //visiting page 4,
+
+            // orderBy: [
+            //     {
+            //         comments: {
+            //             _count: "desc"
+            //         }
+            //     },
+            //     {
+            //         createdAt: "asc"
+            //     },
+            //     {
+            //         title: "asc"
+            //     }
+            // ],
+
+
+            // dynamic pegination------
+
+
             where: {
-                // filtering first
-
                 AND: [
+                    // searchterm
 
+                    query.searchTerm ? {
 
-
-                    {
                         OR: [
                             {
                                 title: {
-                                    contains: "Ron",
-                                    mode: "insensitive"
-                                }
+                                    contains: query.searchTerm,
+                                    mode: "insensitive",
+                                },
 
                             },
 
                             {
                                 content: {
-                                    contains: " Ron",
-                                    mode: "insensitive"
-                                }
+                                    contains: query.searchTerm,
+                                    mode: "insensitive",
+                                },
                             }
                         ]
 
-                    },
+                    } : {},
 
 
 
 
-                    {
-                        title: "Ronaldo"
-                    },
+                    // title filtering
 
-                    {
-                        content: " Ronaldo"
-                    }
+                    query.title ? {
+                        title: query.title
+
+
+                    } : {},
+
+
+                    query.content ? { content: query.content } : {},
                 ]
+            },
+
+
+            take: limit,
+            skip: skip,
+
+            orderBy: {
+
+                // sortby and sortOrder
+
+                [sortBy] : sortOrder
+
+
 
             },
 
 
 
-            take: 1,
-            skip: 1,  //visiting page 2
-            // skip: 2,  //visiting page 3
-            // skip: 3,  //visiting page 4,
 
-            orderBy: [
-                {
-                    comments: {
-                        _count: "desc"
-                    }
-                },
-                {
-                    createdAt: "asc"
-                },
-                {
-                    title: "asc"
+                include : {
+                    author: {
+                        omit: {
+                            password: true
+                        }
+
+                    },
+                    comments: true
                 }
-            ],
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            include: {
-                author: {
-                    omit: {
-                        password: true
-                    }
-
-                },
-                comments: true
-            }
         }
     );
 
