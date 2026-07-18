@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import httpStatus from "http-status"
 import { Prisma } from "../../generated/prisma/client";
 import { error } from "node:console";
+import { stat } from "node:fs";
 
 
 export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -34,9 +35,23 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         }
 
     } else if (err instanceof Prisma.PrismaClientInitializationError) {
-        statusCode = httpStatus.INTERNAL_SERVER_ERROR,
-            errorMessage= "Authentication error"
+        // statusCode = httpStatus.INTERNAL_SERVER_ERROR,
+        //     errorMessage= "Authentication error"
+
+        if (err.errorCode === "p1000") {
+            statusCode = httpStatus.UNAUTHORIZED,
+                errorMessage= " AAuthenticaation failed against database server"
+        } else if (err.errorCode === "p1001") {
+            statusCode = httpStatus.BAD_REQUEST,
+                errorMessage= "cant reach database server"
+        }
         
+    } else if (err instanceof Prisma.PrismaClientUnknownRequestError) {
+
+        statusCode = httpStatus.INTERNAL_SERVER_ERROR,
+            
+            errorMessage= " error occured during query time"
+            
     }
 
 
