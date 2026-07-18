@@ -1,5 +1,5 @@
 import cookieParser from "cookie-parser";
-import express, { Application,  Request, Response } from "express";
+import express, { Application,  NextFunction,  Request, Response } from "express";
 import cors from "cors";
 import config from "./config";
 import { userRoutes } from "./modules/user/user.route";
@@ -8,6 +8,7 @@ import { postRoutes } from "./modules/post/post.route";
 import { commentRoutes } from "./modules/comment/comment.route";
 import path from "node:path";
 import { notFound } from "./middlewares/notFound";
+import  httpStatus from "http-status"
 
 
 const app: Application = express();
@@ -52,6 +53,17 @@ app.use("/api/comments", commentRoutes)
 // })
 
 app.use(notFound)
+
+app.use((err:any, req: Request, res: Response, next: NextFunction) => {
+    
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+        message: err.message,
+        error: err
+    });
+    
+})
 
 
 
