@@ -34,7 +34,72 @@ const getAllPosts = async (query: IpostQuery) => {
     const page = query.page ? Number(query.page) : 1
     const skip = (page - 1) * limit
     const sortBy = query.sortBy ? query.sortBy : "createdAt"
-    const sortOrder = query.sortOrder   ? query.sortOrder : "desc"
+    const sortOrder = query.sortOrder ? query.sortOrder : "desc"
+    
+
+    const andConditions: postWhereInput[] = []
+    
+    if (query.searchTerm) {
+        andConditions.push({
+            OR: [
+                {
+                    title: {
+                        contains: query.searchTerm,
+                        mode: "insensitive",
+                    },
+
+                },
+
+                {
+                    content: {
+                        contains: query.searchTerm,
+                        mode: "insensitive",
+                    },
+                }
+
+            ]
+        })
+    }
+
+
+    if (query.title) {
+        andConditions.push({
+            title: query.title
+        })
+    }
+
+    if (query.content) {
+        andConditions.push({
+            content: query.content
+        })
+    }
+
+    if (query.authorId) {
+        andConditions.push({
+            authorId: query.authorId
+        })
+    }
+
+    if (query.isFeatured) {
+        andConditions.push({
+            isFeatured : Boolean(query.isFeatured)
+        })
+    }
+
+    if (query.tags) {
+        andConditions.push({
+            tags: {
+                hasSome: query.tags as string[]
+            }
+        })
+    }
+
+
+    if (query.status) {
+        andConditions.push({
+            status: query.status
+        })
+    }
 
     const posts = await prisma.post.findMany(
         {
@@ -164,45 +229,50 @@ const getAllPosts = async (query: IpostQuery) => {
             // dynamic pegination------
 
 
+            // where: {
+            //     AND: [
+            //         // searchterm
+
+            //         query.searchTerm ? {
+
+            //             OR: [
+            //                 {
+            //                     title: {
+            //                         contains: query.searchTerm,
+            //                         mode: "insensitive",
+            //                     },
+
+            //                 },
+
+            //                 {
+            //                     content: {
+            //                         contains: query.searchTerm,
+            //                         mode: "insensitive",
+            //                     },
+            //                 }
+            //             ]
+
+            //         } : {},
+
+
+
+
+            //         // title filtering
+
+            //         query.title ? {
+            //             title: query.title
+
+
+            //         } : {},
+
+
+            //         query.content ? { content: query.content } : {},
+            //     ]
+            // },
+            
             where: {
-                AND: [
-                    // searchterm
+                AND: andConditions,
 
-                    query.searchTerm ? {
-
-                        OR: [
-                            {
-                                title: {
-                                    contains: query.searchTerm,
-                                    mode: "insensitive",
-                                },
-
-                            },
-
-                            {
-                                content: {
-                                    contains: query.searchTerm,
-                                    mode: "insensitive",
-                                },
-                            }
-                        ]
-
-                    } : {},
-
-
-
-
-                    // title filtering
-
-                    query.title ? {
-                        title: query.title
-
-
-                    } : {},
-
-
-                    query.content ? { content: query.content } : {},
-                ]
             },
 
 
