@@ -77,14 +77,44 @@ const getAllPosts = async () => {
             //         }
             //     ]
             // },
-            
+
             // combined searching and filtering
-            
+
             where: {
+                // filtering first
+
+                AND: [
+
+
+
+                    {
+                        OR: [
+                            {
+                                title: {
+                                    contains: "Ron",
+                                    mode:"insensitive"
+                                }
+                            
+                            }
+                        ]
+
+                    },
+        
                 
+                
+                
+                    {
+                        title: "Ronaldo"
+                    },
+
+                    {
+                        content: " Ronaldo"
+                    }
+                ]
+
             },
-            
-            
+
+
 
 
 
