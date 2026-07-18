@@ -9,6 +9,7 @@ import { commentRoutes } from "./modules/comment/comment.route";
 import path from "node:path";
 import { notFound } from "./middlewares/notFound";
 import  httpStatus from "http-status"
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 
 const app: Application = express();
@@ -54,16 +55,7 @@ app.use("/api/comments", commentRoutes)
 
 app.use(notFound)
 
-app.use((err:any, req: Request, res: Response, next: NextFunction) => {
-    
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        statusCode: httpStatus.INTERNAL_SERVER_ERROR,
-        message: err.message,
-        error: err
-    });
-    
-})
+app.use(globalErrorHandler)
 
 
 
