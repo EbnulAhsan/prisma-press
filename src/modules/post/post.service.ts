@@ -5,6 +5,7 @@ import { CommentStatus, PostStatus } from "../../../generated/prisma/enums"
 import { text } from "node:stream/consumers"
 import { postWhereInput } from "../../../generated/prisma/models"
 import { title } from "node:process"
+import { array } from "node:stream/iter"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
@@ -35,10 +36,13 @@ const getAllPosts = async (query: IpostQuery) => {
     const skip = (page - 1) * limit
     const sortBy = query.sortBy ? query.sortBy : "createdAt"
     const sortOrder = query.sortOrder ? query.sortOrder : "desc"
+
+    const tags = query.tags ? JSON.parse(query.tags as string) : null
+    const tagsArray = Array.isArray(tags) ? tags : []
     
 
     const andConditions: postWhereInput[] = []
-    
+
     if (query.searchTerm) {
         andConditions.push({
             OR: [
@@ -82,14 +86,14 @@ const getAllPosts = async (query: IpostQuery) => {
 
     if (query.isFeatured) {
         andConditions.push({
-            isFeatured : Boolean(query.isFeatured)
+            isFeatured: Boolean(query.isFeatured)
         })
     }
 
     if (query.tags) {
         andConditions.push({
             tags: {
-                hasSome: query.tags as string[]
+                hasSome: tagsArray
             }
         })
     }
@@ -269,7 +273,7 @@ const getAllPosts = async (query: IpostQuery) => {
             //         query.content ? { content: query.content } : {},
             //     ]
             // },
-            
+
             where: {
                 AND: andConditions,
 
@@ -283,7 +287,7 @@ const getAllPosts = async (query: IpostQuery) => {
 
                 // sortby and sortOrder
 
-                [sortBy] : sortOrder
+                [sortBy]: sortOrder
 
 
 
@@ -292,15 +296,15 @@ const getAllPosts = async (query: IpostQuery) => {
 
 
 
-                include : {
-                    author: {
-                        omit: {
-                            password: true
-                        }
+            include: {
+                author: {
+                    omit: {
+                        password: true
+                    }
 
-                    },
-                    comments: true
-                }
+                },
+                comments: true
+            }
         }
     );
 
