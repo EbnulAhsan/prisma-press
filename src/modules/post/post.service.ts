@@ -123,6 +123,27 @@ const getAllPosts = async () => {
 
 
 
+            take: 1,
+            skip: 1,  //visiting page 2
+            // skip: 2,  //visiting page 3
+            // skip: 3,  //visiting page 4,
+
+            orderBy: [
+                {
+                    comments: {
+                        _count: "desc"
+                    }
+                },
+                {
+                    createdAt: "asc"
+                },
+                {
+                    title: "asc"
+                }
+            ],
+
+
+
 
 
 
