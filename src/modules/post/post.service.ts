@@ -23,22 +23,86 @@ const getAllPosts = async () => {
 
     const posts = await prisma.post.findMany(
         {
+            // searching without and operator 
+
             // where: {
             //     title: " my 4th  post",
-                
+
             // },
 
 
-            // another way is 
+            // another way is using and operator 
 
+            // where: {
+            //     AND: [
+            //         {
+            //             title: " my 4th  post",
+
+            //         }
+            //     ]
+            // },
+
+
+            // main searching / partial match
+
+            // where: {
+            //     title: {
+            //         contains: "Ronaldo",
+            //         mode: "insensitive",
+
+            //     },
+
+            //     //  not ideal for partial match 
+
+            //     // content: {
+            //     //     contains: "Ronaldo"
+            //     // }
+            // },
+
+
+            // where: {
+            //     OR: [
+            //         {
+            //             title: {
+            //                 contains: "Ronaldo",
+            //                 mode: "insensitive"
+            //             }
+            //         },
+
+            //         {
+            //             content: {
+            //                 contains: "Ronaldo",
+            //                 mode:"insensitive"
+            //             }
+            //         }
+            //     ]
+            // },
+            
+            // combined searching and filtering
+            
             where: {
-                AND: [
-                    {
-                        title: " my 4th  post",
-                        
-                    }
-                ]
+                
             },
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             include: {
                 author: {
                     omit: {
@@ -353,8 +417,8 @@ const getPostsStats = async () => {
             ])
 
             return {
-                totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments, 
-                totalPostViews  : totalPostViewsAggregate._sum.views
+                totalPosts, totalPublishedPosts, totalDraftPosts, totalArchivedPosts, totalComments, totalApprovedComments, totalRejectedComments,
+                totalPostViews: totalPostViewsAggregate._sum.views
 
             }
 
