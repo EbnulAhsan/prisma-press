@@ -1,6 +1,8 @@
 
 
-const createCheckoutSession = (userId : string) => {
+const createCheckoutSession = async (userId: string) => {
+    
+    
 
 }
 
