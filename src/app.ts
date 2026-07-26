@@ -1,5 +1,5 @@
 import cookieParser from "cookie-parser";
-import express, { Application,  NextFunction,  Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import config from "./config";
 import { userRoutes } from "./modules/user/user.route";
@@ -8,8 +8,9 @@ import { postRoutes } from "./modules/post/post.route";
 import { commentRoutes } from "./modules/comment/comment.route";
 import path from "node:path";
 import { notFound } from "./middlewares/notFound";
-import  httpStatus from "http-status"
+import httpStatus from "http-status"
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import { subscriptionRoutes, } from "./modules/subscription/subscription.route";
 
 
 const app: Application = express();
@@ -38,9 +39,10 @@ app.get("/", (req: Request, res: Response) => {
 // app.post()
 
 app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);  
+app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes)
-app.use("/api/comments", commentRoutes) 
+app.use("/api/comments", commentRoutes)
+app.use("api/subscription", subscriptionRoutes)
 
 
 
