@@ -17,4 +17,7 @@ export default {
 
     jwt_access_expiration: process.env.JWT_ACCESS_EXPIRATION as SignOptions["expiresIn"],
     jwt_refresh_expiration: process.env.JWT_REFRESH_EXPIRATION as SignOptions["expiresIn"],
+    stripe_product_key: process.env.STRIPE_PRODUCT_KEY!,
+    stripe_secret_key: process.env.STRIPE_SECRET_KEY!
+
 };
