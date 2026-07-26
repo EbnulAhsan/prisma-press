@@ -5,7 +5,7 @@ import { SignOptions } from "jsonwebtoken";
 dotenv.config({ path: path.join(process.cwd(), ".env") });
 
 export default {
-    port: process.env.PORT || 5000,
+    port: process.env.PORT || 3000,
 
     database_Url: process.env.DATABASE_URL,
     app_url: process.env.APP_URL,
@@ -17,7 +17,7 @@ export default {
 
     jwt_access_expiration: process.env.JWT_ACCESS_EXPIRATION as SignOptions["expiresIn"],
     jwt_refresh_expiration: process.env.JWT_REFRESH_EXPIRATION as SignOptions["expiresIn"],
-    stripe_product_key: process.env.STRIPE_PRODUCT_KEY!,
+    stripe_product_id: process.env.STRIPE_PRODUCT_ID!,
     stripe_secret_key: process.env.STRIPE_SECRET_KEY!
 
 };
