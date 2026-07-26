@@ -11,4 +11,6 @@ model Subscription {
   updatedAt        DateTime @updatedAt
 
   status SubscriptionStatus @default(ACTIVE)
+
+  @@map("subscriptions")
 }
