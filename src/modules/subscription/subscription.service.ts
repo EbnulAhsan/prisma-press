@@ -1,6 +1,6 @@
 
 
-const createCheckoutSession = () => {
+const createCheckoutSession = (userId : string) => {
 
 }
 
