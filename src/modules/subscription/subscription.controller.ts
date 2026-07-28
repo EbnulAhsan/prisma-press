@@ -1,4 +1,4 @@
-import { Request,NextFunction,Response } from "express";
+import { Request, NextFunction, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { subscriptionService } from "./subscription.service";
 import { sendResponse } from "../../utils/senResponse";
@@ -8,11 +8,11 @@ import httpStatus from "http-status"
 
 const createCheckoutSession = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-        
+
         const userId = req.user?.id
 
         const result = await subscriptionService.createCheckoutSession(userId as string)
-        
+
         // sending response
 
         sendResponse(res, {
@@ -22,7 +22,15 @@ const createCheckoutSession = catchAsync(
             data: result
         })
 
-        
+
+
+    }
+)
+
+// controller for webhook
+
+const handleWebhook = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
         
     }
 )
@@ -39,7 +47,7 @@ const createCheckoutSession = catchAsync(
 
 
 export const subscriptionController = {
-    createCheckoutSession
+    createCheckoutSession, handleWebhook
 }
 
 

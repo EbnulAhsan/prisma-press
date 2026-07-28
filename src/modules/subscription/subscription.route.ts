@@ -10,6 +10,12 @@ router.post("/checkout",
     auth(Role.Admin, Role.User, Role.Author),
 
 
-    subscriptionController.createCheckoutSession)
+    subscriptionController.createCheckoutSession
+)
+
+router.post("/webhook", subscriptionController.handleWebhook)
+
+
+
 
 export const subscriptionRoutes = router
