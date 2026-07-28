@@ -172,6 +172,12 @@ const handleCheckOutCompleted = async (
     });
 };
 
+// handler function for subscription deleted and updated
+
+
+const handleChangeSubscription = () => {
+    
+}
 
 
 
