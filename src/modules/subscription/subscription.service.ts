@@ -1,6 +1,9 @@
+import { request } from "node:http"
 import config from "../../config"
 import { prisma } from "../../lib/prisma"
 import { stripe } from "../../lib/stripe"
+import Stripe from "stripe";
+import { log } from "node:console"
 
 
 const createCheckoutSession = async (userId: string) => {
@@ -71,6 +74,49 @@ const createCheckoutSession = async (userId: string) => {
 }
 
 
+// new function
+
+const handleWebhook = async (payload: Buffer, signature: string) => {
+
+    const endpointSecret = config.stripe_webhook_secret
+
+    const event = stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        endpointSecret
+
+    )
+
+
+    switch (event.type) {
+        case 'checkout.session.completed':
+            console.log(event.data.object);
+            const session: Stripe.Checkout.Session = event.data.object
+            
+            const userId = session.metadata?.userId
+
+
+            break;
+
+        case 'customer.subscription.updated':
+
+            break
+
+        case 'customer.subscription.deleted':
+            break
+
+
+        default:
+            console.log('unhandled event type ${evet.type}')
+            break
+
+
+    }
+
+
+}
+
+
 
 
 
@@ -84,5 +130,5 @@ const createCheckoutSession = async (userId: string) => {
 
 
 export const subscriptionService = {
-    createCheckoutSession
+    createCheckoutSession, handleWebhook
 }
