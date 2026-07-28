@@ -92,8 +92,22 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
         case 'checkout.session.completed':
             console.log(event.data.object);
             const session: Stripe.Checkout.Session = event.data.object
-            
+
             const userId = session.metadata?.userId
+            const stripeCustomerId = session.customer
+            const stripeSubscriptionId = session.subscription as string
+
+            if (!userId || !stripeSubscriptionId || !stripeCustomerId) {
+                throw new Error("webhook failed ")
+            }
+
+            const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId)
+
+            console.log("sub info", stripeSubscription.items.data[0])
+            
+            const currentPeriodStart = stripeSubscription.items.data[0]?.current_period_start
+
+            
 
 
             break;
