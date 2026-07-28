@@ -104,10 +104,18 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
             const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId)
 
             console.log("sub info", stripeSubscription.items.data[0])
-            
-            const currentPeriodStart = stripeSubscription.items.data[0]?.current_period_start
 
-            
+            // const currentPeriodStart = stripeSubscription.items.data[0]?.current_period_start
+
+            const currentPeriodEndInMilliseconds = stripeSubscription.items.data[0]?.current_period_end!
+
+            const currentPeriodEnd = new Date(currentPeriodEndInMilliseconds * 1000)
+
+            console.log(currentPeriodEndInMilliseconds)
+
+
+
+
 
 
             break;
