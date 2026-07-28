@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma"
 import { stripe } from "../../lib/stripe"
 import Stripe from "stripe";
 import { log } from "node:console"
+import { Session } from "node:inspector";
 
 
 const createCheckoutSession = async (userId: string) => {
@@ -90,51 +91,10 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
 
     switch (event.type) {
         case 'checkout.session.completed':
-            console.log(event.data.object);
-            const session: Stripe.Checkout.Session = event.data.object
+            // console.log(event.data.object);
 
-            const userId = session.metadata?.userId
-            const stripeCustomerId = session.customer as string
-            const stripeSubscriptionId = session.subscription as string
 
-            if (!userId || !stripeSubscriptionId || !stripeCustomerId) {
-                throw new Error("webhook failed ")
-            }
-
-            const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId)
-
-            console.log("sub info", stripeSubscription.items.data[0])
-
-            // const currentPeriodStart = stripeSubscription.items.data[0]?.current_period_start
-
-            const currentPeriodEndInMilliseconds = stripeSubscription.items.data[0]?.current_period_end!
-
-            const currentPeriodEnd = new Date(currentPeriodEndInMilliseconds * 1000)
-
-            console.log(currentPeriodEnd, "end ")
-
-            await prisma.subscription.upsert({
-                where: {
-                    userId
-                },
-
-                create: {
-                    userId,
-                    stripeCustomerId,
-                    stripeSubscriptionId,
-                    status: "ACTIVE",
-                    currentPeriodEnd
-
-                },
-                update: {
-                    stripeCustomerId,
-                    stripeSubscriptionId,
-                    status: "ACTIVE",
-                    currentPeriodEnd
-
-                }
-            })
-
+           await handleCheckOutCompleted(event.data.object)
 
 
 
@@ -163,11 +123,52 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
 }
 
 
+const handleCheckOutCompleted = async (Session: Stripe.Checkout.Session) => {
+    // const session: Stripe.Checkout.Session = event.data.object
 
+    const userId = session.metadata?.userId
+    const stripeCustomerId = session.customer as string
+    const stripeSubscriptionId = session.subscription as string
 
+    if (!userId || !stripeSubscriptionId || !stripeCustomerId) {
+        throw new Error("webhook failed ")
+    }
 
+    const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId)
 
+    // console.log("sub info", stripeSubscription.items.data[0])
 
+    // const currentPeriodStart = stripeSubscription.items.data[0]?.current_period_start
+
+    const currentPeriodEndInMilliseconds = stripeSubscription.items.data[0]?.current_period_end!
+
+    const currentPeriodEnd = new Date(currentPeriodEndInMilliseconds * 1000)
+
+    // console.log(currentPeriodEnd, "end ")
+
+    await prisma.subscription.upsert({
+        where: {
+            userId
+        },
+
+        create: {
+            userId,
+            stripeCustomerId,
+            stripeSubscriptionId,
+            status: "ACTIVE",
+            currentPeriodEnd
+
+        },
+        update: {
+            stripeCustomerId,
+            stripeSubscriptionId,
+            status: "ACTIVE",
+            currentPeriodEnd
+
+        }
+    })
+
+}
 
 
 
