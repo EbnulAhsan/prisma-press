@@ -16,6 +16,11 @@ router.post("/checkout",
 router.post("/webhook", subscriptionController.handleWebhook)
 
 
+router.get("/status",
+    auth(Role.Admin, Role.User, Role.Author),
+    subscriptionController.getSubscriptionStatus)
+
+
 
 
 export const subscriptionRoutes = router

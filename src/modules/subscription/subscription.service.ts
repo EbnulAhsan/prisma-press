@@ -7,9 +7,10 @@ import { log } from "node:console"
 import { Session } from "node:inspector";
 import { SubscriptionStatus } from "../../../generated/prisma/enums";
 import { handleChangeSubscription, handleCheckOutCompleted } from "./subscription.utils";
+import status from "http-status";
 
 
- const createCheckoutSession = async (userId: string) => {
+const createCheckoutSession = async (userId: string) => {
 
     const transactionResult = await prisma.$transaction(async (tx) => {
 
@@ -79,7 +80,7 @@ import { handleChangeSubscription, handleCheckOutCompleted } from "./subscriptio
 
 // new function
 
- const handleWebhook = async (payload: Buffer, signature: string) => {
+const handleWebhook = async (payload: Buffer, signature: string) => {
 
     const endpointSecret = config.stripe_webhook_secret
 
@@ -132,6 +133,24 @@ import { handleChangeSubscription, handleCheckOutCompleted } from "./subscriptio
 
 
 
+const getSubscriptionStatus = async (userId: string) => {
+    const isSubscriptionExist = await prisma.subscription.findFirstOrThrow({
+        where: {
+            userId
+        }
+    })
+
+    const isActive = isSubscriptionExist.status === "ACTIVE" && isSubscriptionExist.currentPeriodEnd && new Date(isSubscriptionExist.currentPeriodEnd) > new Date
+
+
+    return {
+        status: isSubscriptionExist.status,
+        isSubscribed: isActive,
+        currentPeriodEnd: isSubscriptionExist.currentPeriodEnd
+    }
+}
+
+
 
 
 
@@ -139,5 +158,6 @@ import { handleChangeSubscription, handleCheckOutCompleted } from "./subscriptio
 
 
 export const subscriptionService = {
-    createCheckoutSession, handleWebhook
+    createCheckoutSession, handleWebhook,
+    getSubscriptionStatus
 }
