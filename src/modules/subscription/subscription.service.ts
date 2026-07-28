@@ -94,7 +94,7 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
             const session: Stripe.Checkout.Session = event.data.object
 
             const userId = session.metadata?.userId
-            const stripeCustomerId = session.customer
+            const stripeCustomerId = session.customer as string
             const stripeSubscriptionId = session.subscription as string
 
             if (!userId || !stripeSubscriptionId || !stripeCustomerId) {
@@ -111,7 +111,31 @@ const handleWebhook = async (payload: Buffer, signature: string) => {
 
             const currentPeriodEnd = new Date(currentPeriodEndInMilliseconds * 1000)
 
-            console.log(currentPeriodEndInMilliseconds)
+            console.log(currentPeriodEnd, "end ")
+
+            await prisma.subscription.upsert({
+                where: {
+                    userId
+                },
+
+                create: {
+                    userId,
+                    stripeCustomerId,
+                    stripeSubscriptionId,
+                    status: "ACTIVE",
+                    currentPeriodEnd
+
+                },
+                update: {
+                    stripeCustomerId,
+                    stripeSubscriptionId,
+                    status: "ACTIVE",
+                    currentPeriodEnd
+
+                }
+            })
+
+
 
 
 

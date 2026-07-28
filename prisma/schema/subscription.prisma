@@ -6,6 +6,8 @@ model Subscription {
 
   stripeCustomerId String @unique
 
+  stripeSubscriptionId String @unique
+
   currentPeriodEnd DateTime
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
