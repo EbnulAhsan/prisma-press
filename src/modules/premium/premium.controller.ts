@@ -18,7 +18,9 @@ const getPremiumContent = catchAsync(
             success: true,
             statusCode: httpStatus.OK,
             message: "premium content Retrived successfully ",
-            data: result
+            data: result.data,
+            meta: result.meta
+
 
 
         })
