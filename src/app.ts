@@ -12,6 +12,7 @@ import httpStatus from "http-status"
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import { subscriptionRoutes, } from "./modules/subscription/subscription.route";
 import { stripe } from "./lib/stripe";
+import { PremiumRoutes } from "./modules/premium/premium.route";
 
 
 const app: Application = express();
@@ -73,7 +74,7 @@ const endpointSecret = config.stripe_webhook_secret;
 
 // })
 
-app.use("/api/subscription/webhook", express.raw({type: 'application/json'}))
+app.use("/api/subscription/webhook", express.raw({ type: 'application/json' }))
 
 
 app.use(express.json());
@@ -104,6 +105,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes)
 app.use("/api/comments", commentRoutes)
 app.use("/api/subscription", subscriptionRoutes)
+app.use("/api/premium", PremiumRoutes)
 
 
 
