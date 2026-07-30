@@ -106,7 +106,12 @@ const getAllPosts = async (query: IpostQuery) => {
     }
 
 
-    // add new
+    // add new function
+
+    andConditions.push({
+        isPremium: false
+
+    })
 
 
 
