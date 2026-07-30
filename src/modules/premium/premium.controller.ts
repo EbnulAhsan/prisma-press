@@ -10,7 +10,9 @@ const getPremiumContent = catchAsync(
 
         // const userId= req.user?.id
 
-        const result = await PremiumServices.getPremiumContent
+        const query = req.query
+
+        const result = await PremiumServices.getPremiumContent(query)
 
         sendResponse(res, {
             success: true,
