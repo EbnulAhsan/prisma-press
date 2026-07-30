@@ -39,7 +39,7 @@ const getAllPosts = async (query: IpostQuery) => {
 
     const tags = query.tags ? JSON.parse(query.tags as string) : null
     const tagsArray = Array.isArray(tags) ? tags : []
-    
+
 
     const andConditions: postWhereInput[] = []
 
@@ -104,6 +104,11 @@ const getAllPosts = async (query: IpostQuery) => {
             status: query.status
         })
     }
+
+
+    // add new
+
+
 
     const posts = await prisma.post.findMany(
         {
