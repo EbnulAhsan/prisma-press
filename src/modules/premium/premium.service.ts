@@ -2,12 +2,16 @@ import { prisma } from "../../lib/prisma"
 
 
 const getPremiumContent = async () => {
-    const post = await prisma.post.findMany({
+    const posts = await prisma.post.findMany({
+        where: {
+            isPremium: true
+        }
 
 
-        
+
 
     })
+    return posts
 
 }
 
