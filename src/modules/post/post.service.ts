@@ -9,6 +9,22 @@ import { array } from "node:stream/iter"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
+    const user = await prisma.user.findFirstOrThrow({
+        where: {
+            id: userId
+        },
+        include: {
+            subscription: true
+        }
+    })
+
+    // conditions apply now
+
+    if (payload.isPremium && user.subscription?.status !== "ACTIVE") {
+        throw new Error("you are not a premium user so you can not create a premium content here.")
+
+    }
+
     const result = await prisma.post.create({
         data: {
             ...payload,
