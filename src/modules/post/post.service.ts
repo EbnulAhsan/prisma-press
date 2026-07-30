@@ -6,6 +6,7 @@ import { text } from "node:stream/consumers"
 import { postWhereInput } from "../../../generated/prisma/models"
 import { title } from "node:process"
 import { array } from "node:stream/iter"
+import { totalmem } from "node:os"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
 
@@ -18,7 +19,7 @@ const creatPost = async (payload: ICreatePostPayload, userId: string) => {
         }
     })
 
-    // conditions apply now
+    // conditions apply now for premium user 
 
     if (payload.isPremium && user.subscription?.status !== "ACTIVE") {
         throw new Error("you are not a premium user so you can not create a premium content here.")
@@ -334,7 +335,21 @@ const getAllPosts = async (query: IpostQuery) => {
         }
     );
 
-    return posts
+    const totalPostCount = await prisma.post.count({
+        where: {
+            AND: andConditions
+        }
+    })
+
+    return {
+        data: posts,
+        meta: {
+            page: page,
+            limit: limit,
+            total: totalPostCount,
+            totalPages: Math.ceil(totalPostCount/limit)
+        }
+    }
 
 }
 
