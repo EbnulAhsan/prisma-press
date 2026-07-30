@@ -29,7 +29,7 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         } else if (err.code === "p2003") {
             statusCode = httpStatus.BAD_REQUEST,
                 errorMessage = " foreign key constraint failed "
-        } else if (err.code === "p2005") {
+        } else if (err.code === "p2025") {
             statusCode = httpStatus.BAD_REQUEST,
                 errorMessage = "  an operation failed bcz it depends on one or more records that were required but not found "
         }

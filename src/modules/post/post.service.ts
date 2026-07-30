@@ -376,6 +376,7 @@ const getPostById = async (postId: string) => {
             await tx.post.update({
                 where: {
                     id: postId,
+
                 },
                 data: {
                     views: {
@@ -386,7 +387,8 @@ const getPostById = async (postId: string) => {
             // throw new Error("fake error")
             const post = await tx.post.findUniqueOrThrow({
                 where: {
-                    id: postId
+                    id: postId,
+                    isPremium: false
                 },
 
                 include: {
