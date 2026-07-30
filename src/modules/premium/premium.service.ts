@@ -1,6 +1,13 @@
+import { prisma } from "../../lib/prisma"
 
 
-const getPremiumContent = () => {
+const getPremiumContent = async () => {
+    const post = await prisma.post.findMany({
+
+
+        
+
+    })
 
 }
 
