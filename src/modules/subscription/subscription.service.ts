@@ -75,34 +75,54 @@ const createCheckoutSession = async (userId: string) => {
 };
 
 // Payment shesh hole frontend theke session_id verify kore user-ke ACTIVE korar function
+// Payment shesh hole frontend theke session_id verify kore user-ke ACTIVE korar function
 const verifyPaymentSession = async (sessionId: string, userId: string) => {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ["subscription"],
+    });
 
     if (session.payment_status === "paid") {
-        const subscriptionId = session.subscription as string;
-        const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
+        const subscription = session.subscription as Stripe.Subscription | null;
+        const subscriptionId = typeof session.subscription === "string"
+            ? session.subscription
+            : subscription?.id || "";
 
-        const currentPeriodEnd = new Date((stripeSub as any).current_period_end * 1000);
+        // Safe date calculation: Jodi stripe subscription theke end date na pay, default 30 din porer date nibe
+        let currentPeriodEnd: Date;
+        if (subscription && (subscription as any).current_period_end) {
+            currentPeriodEnd = new Date((subscription as any).current_period_end * 1000);
+        } else {
+            const date = new Date();
+            date.setDate(date.getDate() + 30);
+            currentPeriodEnd = date;
+        }
+
+        // Date valid kina final check
+        if (isNaN(currentPeriodEnd.getTime())) {
+            const fallbackDate = new Date();
+            fallbackDate.setDate(fallbackDate.getDate() + 30);
+            currentPeriodEnd = fallbackDate;
+        }
 
         await prisma.subscription.upsert({
             where: { userId },
             update: {
                 status: SubscriptionStatus.ACTIVE,
                 stripeSubscriptionId: subscriptionId,
-                currentPeriodEnd
+                currentPeriodEnd,
             },
             create: {
                 userId,
-                stripeCustomerId: session.customer as string,
+                stripeCustomerId: (session.customer as string) || "",
                 stripeSubscriptionId: subscriptionId,
                 status: SubscriptionStatus.ACTIVE,
-                currentPeriodEnd
-            }
+                currentPeriodEnd,
+            },
         });
 
         return {
             success: true,
-            message: "Subscription successfully activated!"
+            message: "Subscription successfully activated!",
         };
     }
 
@@ -163,6 +183,9 @@ const getSubscriptionStatus = async (userId: string) => {
         currentPeriodEnd: isSubscriptionExist.currentPeriodEnd
     };
 };
+
+
+
 
 export const subscriptionService = {
     createCheckoutSession,
