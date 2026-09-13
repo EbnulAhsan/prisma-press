@@ -1,22 +1,18 @@
 model post {
   id         String     @id @default(uuid())
   title      String     @db.VarChar(255)
-  content    String     @db.Text
+  content    String
   thumbnail  String?
   isFeatured Boolean    @default(false)
   status     PostStatus @default(PUBLISHED)
   tags       String[]
   views      Int        @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  isPremium Boolean @default(false)
-
-  authorId String
-  author   user   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  comments Comment[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  authorId   String
+  isPremium  Boolean    @default(false)
+  comments   Comment[]
+  author     user       @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
   @@map("posts")

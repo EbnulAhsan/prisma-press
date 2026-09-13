@@ -69,6 +69,24 @@ const getSubscriptionStatus = catchAsync(
 )
 
 
+const verifySession = catchAsync(async (req: Request, res: Response) => {
+    const { session_id } = req.query;
+    const user = (req as any).user; // Auth middleware theke asha logged-in user
+
+    const result = await subscriptionService.verifyPaymentSession(
+        session_id as string,
+        user.id
+    );
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Payment verified and subscription activated successfully!",
+        data: result
+    });
+});
+
+
 
 
 
@@ -80,7 +98,7 @@ const getSubscriptionStatus = catchAsync(
 
 
 export const subscriptionController = {
-    createCheckoutSession, handleWebhook, getSubscriptionStatus
+    createCheckoutSession, handleWebhook, getSubscriptionStatus, verifySession
 }
 
 
