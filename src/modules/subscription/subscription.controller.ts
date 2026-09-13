@@ -71,11 +71,18 @@ const getSubscriptionStatus = catchAsync(
 
 const verifySession = catchAsync(async (req: Request, res: Response) => {
     const { session_id } = req.query;
-    const user = (req as any).user; // Auth middleware theke asha logged-in user
+    const user = (req as any).user;
+
+    // Middleware user payload-e id ba userId jeta-i thakuk seta nibe
+    const userId = user?.id || user?.userId;
+
+    if (!userId) {
+        throw new Error("Unauthorized user context");
+    }
 
     const result = await subscriptionService.verifyPaymentSession(
         session_id as string,
-        user.id
+        userId
     );
 
     sendResponse(res, {

@@ -15,11 +15,7 @@ router.post("/checkout",
 
 router.post("/webhook", subscriptionController.handleWebhook)
 
-router.get(
-    "/verify-session",
-    auth(), // apnar auth guard middleware
-    subscriptionController.verifySession
-);
+router.get("/verify-session", auth(), subscriptionController.verifySession);
 
 
 router.get("/status",
