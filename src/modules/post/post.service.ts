@@ -9,35 +9,47 @@ import { array } from "node:stream/iter"
 import { totalmem } from "node:os"
 
 const creatPost = async (payload: ICreatePostPayload, userId: string) => {
+    // 1. Debug log: ডাটা ঠিকমতো আসছে কি না দেখার জন্য
+    console.log("Creating Post - Payload:", payload);
+    console.log("Creating Post - User ID:", userId);
 
-    const user = await prisma.user.findFirstOrThrow({
-        where: {
-            id: userId
-        },
-        include: {
-            subscription: true
-        }
-    })
-
-    // conditions apply now for premium user 
-
-    if (payload.isPremium && user.subscription?.status !== "ACTIVE") {
-        throw new Error("you are not a premium user so you can not create a premium content here.")
-
+    // 2. Safety check: payload বা userId না থাকলে এরর থ্রো করবে
+    if (!payload) {
+        throw new Error("Post data payload is missing or undefined.");
     }
 
+    if (!userId) {
+        throw new Error("User ID is required to create a post.");
+    }
+
+    // 3. User এবং Subscription খুঁজে বের করা
+    const user = await prisma.user.findFirstOrThrow({
+        where: {
+            id: userId,
+        },
+        include: {
+            subscription: true,
+        },
+    });
+
+    // 4. Premium Post Verification লজিক (Optional chaining ব্যবহার করা হয়েছে যাতে ক্র্যাশ না করে)
+    const isPremiumPost = Boolean(payload?.isPremium);
+
+    if (isPremiumPost && user.subscription?.status !== "ACTIVE") {
+        throw new Error("You are not a premium user, so you cannot create premium content.");
+    }
+
+    // 5. Database-এ Post তৈরি করা
     const result = await prisma.post.create({
         data: {
             ...payload,
-            authorId: userId
-        }
-    })
+            isPremium: isPremiumPost,
+            authorId: userId,
+        },
+    });
 
-    return result
-
-
-
-}
+    return result;
+};
 
 
 // creating interface for query
@@ -347,7 +359,7 @@ const getAllPosts = async (query: IpostQuery) => {
             page: page,
             limit: limit,
             total: totalPostCount,
-            totalPages: Math.ceil(totalPostCount/limit)
+            totalPages: Math.ceil(totalPostCount / limit)
         }
     }
 
